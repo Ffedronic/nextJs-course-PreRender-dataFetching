@@ -13,15 +13,30 @@ function HomePage(props) {
   );
 }
 
-export async function getStaticProps() {
+export async function getStaticProps(context) {
+  console.log("regenerating...");
   const filePath = path.join(process.cwd(), "data", "dummy-backend.json");
   const jsonData = await fs.readFile(filePath);
   const data = JSON.parse(jsonData);
 
+  //redirect to 404 page
+  if (data.products.length === 0) {
+    return { notFound: true };
+  }
+
+  //redirect to an another page
+  if(!data) {
+    redirect: {
+      destination: "/no-data"
+    }
+  }
+
   return {
     props: {
-      products: data.products
+      products: data.products,
     },
+    //revalidate the data every 10 seconds
+    revalidate: 10
   };
 }
 export default HomePage;
