@@ -1,29 +1,7 @@
 import { useEffect, useState } from "react";
 
-function LastSalesPage() {
-  const [sales, setSales] = useState();
-  const [isLoading, setIsLoading] = useState(false);
-  useEffect(() => {
-    setIsLoading(true);
-    fetch("https://nextjs-course-5c4ff-default-rtdb.firebaseio.com/sales.json")
-      .then((response) => response.json())
-      .then((data) => {
-        const transformedSales = [];
-        for (const key in data) {
-          transformedSales.push({
-            id: key,
-            username: data[key].username,
-            volume: data[key].volume,
-          });
-        }
-        setSales(transformedSales);
-        setIsLoading(false);
-      });
-  }, []);
-
-  if (isLoading) {
-    return <p>Loading...</p>;
-  }
+function LastSalesPage(props) {
+  const [sales, setSales] = useState(props.sales);
 
   if (!sales) {
     return <p>No data yet...</p>;
@@ -40,4 +18,22 @@ function LastSalesPage() {
   );
 }
 
+export async function getStaticProps() {
+  const response = await fetch("https://nextjs-course-5c4ff-default-rtdb.firebaseio.com/sales.json")
+      const data = await response.json()
+      const transformedSales = [];
+        for (const key in data) {
+          transformedSales.push({
+            id: key,
+            username: data[key].username,
+            volume: data[key].volume,
+          });
+        }
+
+      return {
+        props: {
+          sales: transformedSales
+        }, revalidate: 10
+      }
+}
 export default LastSalesPage;
